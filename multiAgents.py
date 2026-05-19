@@ -151,15 +151,16 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
         #pacman
         def maxValue(agentIndex, depth, gameState, a, b):
-            # legalAction = gameState.getLegalActions(agentIndex)
+            legalAction = gameState.getLegalActions(agentIndex)
 
-            # if not legalAction:
-            #     return self.evaluationFunction(gameState)
+            if not legalAction:
+                return self.evaluationFunction(gameState)
             
             nextAgent = agentIndex + 1
             v = float("-inf")
             for action in gameState.getLegalActions(agentIndex):
-                v = max(v , alphabeta(nextAgent, depth, gameState.generateSuccessor(agentIndex, action), a, b))
+                nextState = gameState.generateSuccessor(agentIndex, action)
+                v = max(v , alphabeta(nextAgent, depth, nextState, a, b))
                 if(v > b):
                     return v
                 a = max(a, v)
@@ -167,19 +168,19 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         
         #Ghost
         def minValue(agentIndex, depth, gameState, a, b):
-            # validAction = gameState.getLegalActions(agentIndex)
-            # if not validAction:
-            #     return self.evaluationFunction(gameState)
+            validAction = gameState.getLegalActions(agentIndex)
+            if not validAction:
+                return self.evaluationFunction(gameState)
             
             nextAgent = agentIndex + 1
-            nextDepth = depth
             if gameState.getNumAgents() == nextAgent:
                 nextAgent = 0
-                nextDepth += 1                
+                depth += 1               
 
             v = float("inf")
             for action in gameState.getLegalActions(agentIndex):
-                v = min(v, alphabeta(nextAgent, nextDepth, gameState.generateSuccessor(agentIndex, action), a, b))
+                nextState = gameState.generateSuccessor(agentIndex, action)
+                v = min(v, alphabeta(nextAgent, depth, nextState, a, b))
                 if v < a:
                     return v
                 b = min(b, v)
@@ -199,12 +200,13 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         alpha = float("-inf")
         beta = float("inf")
         bestAction = None
-        # valid_actions = gameState.getLegalActions(0)
-        # if not valid_actions:
-        #     return None
+        valid_actions = gameState.getLegalActions(0)
+        if not valid_actions:
+            return None
 
         for action in gameState.getLegalActions(0):
-            score = alphabeta(1, 0 ,gameState.generateSuccessor(0, action), alpha, beta)
+            nextState = gameState.generateSuccessor(0, action)
+            score = alphabeta(1, 0 , nextState, alpha, beta)
             if score > maxScore:
                 maxScore = score
                 bestAction = action
